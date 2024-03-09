@@ -1,0 +1,43 @@
+d1 
+
+conf t
+hostname D1
+no logging console
+no ip domain-lookup
+spanning-tree vlan 1-100 root primary
+end
+
+
+
+
+D1
+
+conf t
+int range e1/2 - 3 
+switchport trunk encap dot1q
+switchport mode trunk
+
+conf t
+vlan 2
+name CHECKME
+exit
+
+
+conf t 
+	router eigrp CCNPENARSI
+	address-family ipv4 unicast autonomous-system 100
+	network 10.1.4.4 0.0.0.3
+	network 10.2.1.0 0.0.0.255
+	network 10.2.2.0 0.0.0.255
+	network 192.168.1.128 0.0.0.31
+	
+D2
+conf t 
+	router eigrp CCNPENARSI
+	address-family ipv4 unicast autonomous-system 100
+	network 10.1.4.8 0.0.0.3
+	network 10.2.1.0 0.0.0.255
+	network 10.2.2.0 0.0.0.255
+	network 192.168.1.128 0.0.0.31
+	
+	
