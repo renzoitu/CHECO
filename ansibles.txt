@@ -1,0 +1,67 @@
+CUCM-42#csim start 4200		! Para mag ring yung analog phone and macheck kung working
+#sh ip route connected | inc C
+
+
+CENTOS
+centos9
+rootcentos#shutdown -h now
+
+[root@centosstream9 centos]#ip route add 10.0.0.0/8v via 10.42.1.4				
+
+
+ANSIBLE
+
+- One of the mosty common automation tool made by red hat. 
+- Used in configuring cisco devices, also in Linux
+- Ansible is Agentless, it means  it does not require any software to be installed on the remote device. It only requires IP address and pingable.
+- Ansible runs on Linux OS only and based on python (Exact space sensitive source coding.
+- Ansible source file is .yml (Using an markup language called YAML	
+																"Yet Another Markup Language"
+- To setup ansible, it requires the control machine (where the devices assumes control to remote devices) and Remote Machines (devices that is being remotely configured automatically)
+
+https://github.com/rivan16/ansible2
+
+
+
+[root@centosstream9 centos]# cd /etc/ansible
+[root@centosstream9 ansible]# ls
+ansible.cfg  hosts  roles
+[root@centosstream9 ansible]# nano hosts
+[root@centosstream9 ansible]# cat hosts
+[root@centosstream9 ansible]# ls
+ansible2  ansible.cfg  hosts  roles
+[root@centosstream9 ansible]# cd ansible2
+[root@centosstream9 ansible2]# ls
+analog.yml  call.yml  config.txt  dhcp.yml  edge.yml  phone.yml  run_all.yml  show.yml  video.yml  wifi.yml
+
+[root@centosstream9 ansible2]# nano analog.yml
+[root@centosstream9 ansible2]# ansible-playbook analog.yml
+
+PLAY [CUCM-42] *****************************************************************************************************************************************************************************************************************************
+
+TASK [ANALOG] ******************************************************************************************************************************************************************************************************************************
+^C [ERROR]: User interrupted execution
+[root@centosstream9 ansible2]# ansible-playbook analog.yml
+
+PLAY [CUCM-42] *****************************************************************************************************************************************************************************************************************************
+
+TASK [ANALOG] ******************************************************************************************************************************************************************************************************************************
+changed: [10.42.100.8]
+
+PLAY RECAP *********************************************************************************************************************************************************************************************************************************
+10.42.100.8                : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+[root@centosstream9 ansible2]# nano phone.yml
+[root@centosstream9 ansible2]# ansible-playbook phone.yml 
+
+PLAY [CUCM-42] *****************************************************************************************************************************************************************************************************************************
+
+TASK [E-PHONES] ****************************************************************************************************************************************************************************************************************************
+changed: [10.42.100.8] => (item=1)
+changed: [10.42.100.8] => (item=2)
+changed: [10.42.100.8] => (item=3)
+
+PLAY RECAP *********************************************************************************************************************************************************************************************************************************
+10.42.100.8                : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+[root@centosstream9 ansible2]# 
