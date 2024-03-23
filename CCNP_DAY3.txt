@@ -1,0 +1,431 @@
+CCNP DAY 3 - DEVOPS & SDWAN
+
+Network Automation
+-10% - 15%
+-JSON (Java Script Object Notation)
+-Basic Phyton
+-RESTAPI/ NETCONF
+
+
+
+@CSR100v
+
+DEVOPS1
+
+conf t
+int gi3
+no shut 
+no logging console
+no ip domain-lookup
+
+int gi2
+ip add 192.168.102.11 255.255.255.0
+no shut 
+
+@cmd
+
+ping 192.168.102.11 
+
+C:\Users\Administrator>ping 192.168.102.11
+
+Pinging 192.168.102.11 with 32 bytes of data:
+Reply from 192.168.102.11: bytes=32 time=1ms TTL=255
+Reply from 192.168.102.11: bytes=32 time=1ms TTL=255
+Reply from 192.168.102.11: bytes=32 time=1ms TTL=255
+Reply from 192.168.102.11: bytes=32 time=1ms TTL=255
+
+Ping statistics for 192.168.102.11:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 1ms, Maximum = 1ms, Average = 1ms
+	
+	
+	
+open securecrt
+
+telnet: 192.168.102.11
+
+Username: admin
+Password: pass
+
+
+
+DEVOPS2
+
+conf t
+int gi3
+no shut 
+no logging console
+no ip domain-lookup
+
+int gi2
+ip add 192.168.102.12 255.255.255.0
+no shut 
+
+@cmd
+
+ping 192.168.102.12
+
+C:\Users\Administrator>ping 192.168.102.12
+
+Pinging 192.168.102.12 with 32 bytes of data:
+Reply from 192.168.102.12: bytes=32 time=8ms TTL=255
+Reply from 192.168.102.12: bytes=32 time=1ms TTL=255
+Reply from 192.168.102.12: bytes=32 time=1ms TTL=255
+Reply from 192.168.102.12: bytes=32 time=1ms TTL=255
+
+Ping statistics for 192.168.102.12:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 1ms, Maximum = 8ms, Average = 2ms
+
+	
+	
+open securecrt
+
+telnet: 192.168.102.12
+
+Username: admin
+Password: pass
+
+
+@cmd 
+
+
+C:\Users\Administrator>
+
+C:\Users\Administrator>cd desktop
+
+C:\Users\Administrator\Desktop>cd _Renzo
+
+C:\Users\Administrator\Desktop\_Renzo>git clone https://github.com/rivancorp/devop
+
+Cloning into 'devop'...
+remote: Enumerating objects: 39, done.
+remote: Counting objects: 100% (39/39), done.
+remote: Compressing objects: 100% (38/38), done.
+remote: Total 39 (delta 13), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (39/39), 47.97 KiB | 944.00 KiB/s, done.
+Resolving deltas: 100% (13/13), done.
+
+DEVOPS 1 
+
+enable IOX:
+
+enableLinuxdockersinCSR1000v
+!!
+config t
+iox
+interface GigabitEthernet1
+ip address dhcp
+ip nat outside
+no shut
+exit
+!
+interface VirtualPortGroup0
+ip address 192.168.35.1 255.255.255.0
+ip nat inside
+exit
+!
+ip nat inside source list GS_NAT_ACL interface GigabitEthernet1 overload
+ip access-list standard GS_NAT_ACL
+permit 192.168.0.0 0.0.255.255
+!
+app-hosting appid guestshell
+ app-vnic gateway1 virtualportgroup 0 guest-interface 0
+    guest-ipaddress 192.168.35.2 netmask 255.255.255.0	
+	app-default-gateway 192.168.35.1  guest-interface 0 
+	name-server0 1.1.1.1
+ app-resource profile custom 
+   cpu 1500 
+   memory 512
+end
+
+DEVOPS1#guestshell enable
+Interface will be selected if configured in app-hosting
+Please wait for completion
+guestshell installed successfully
+Current state is: DEPLOYED
+guestshell activated successfully
+Current state is: ACTIVATED
+guestshell started successfully
+Current state is: RUNNING
+Guestshell enabled successfully
+
+PythonHere
+guestshell run python
+Python 2.7.5 (default, Jun 17 2014, 18:11:42) 
+[GCC 4.8.2 20140120 (Red Hat 4.8.2-16)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> 
+
+
+BashHERE
+guestshell@guestshell ~]$ sudo su
+[root@guestshell guestshell]# 
+
+DEVOPS1#config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+DEVOPS1(config)#no event manager applet WatchLo0
+%EEM: No such applet WatchLo0
+DEVOPS1(config)#event manager applet WatchLo0
+DEVOPS1(config-applet)# event syslog pattern "Interface Loopback0.* down" period 1
+DEVOPS1(config-applet)# action 2.0 cli command "enable"
+DEVOPS1(config-applet)# action 2.1 cli command "config t"
+DEVOPS1(config-applet)# action 2.2 cli command "interface lo0"
+DEVOPS1(config-applet)# action 2.3 cli command "no shutdown"
+DEVOPS1(config-applet)# action 3.0 syslog msg "BETTER LUCK GagoKA!!,MATIK Loopback0 was brought up via EEM"
+DEVOPS1(config-applet)# end
+
+
+DEVOPS1#terminal monitor
+DEVOPS1#conf t
+DEVOPS1(config)#logging console
+DEVOPS1(config)#do event manager run WatchLo0
+EEM policy watchLo0 not registered with event none Event Detector
+
+TEST:
+
+
+DEVOPS1(config)#int l0
+DEVOPS1(config-if)#sh
+DEVOPS1(config-if)#
+*Mar 23 10:44:04.879: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to down
+*Mar 23 10:44:04.880: %LINK-5-CHANGED: Interface Loopback0, changed state to administratively down
+*Mar 23 10:44:05.261: %HA_EM-6-LOG: WatchLo0: BETTER LUCK GagoKA!!,MATIK Loopback0 was brought up via EEM
+*Mar 23 10:44:05.358: %HA_EM-6-LOG: WatchLo0: BETTER LUCK GagoKA!!,MATIK Loopback0 was brought up via EEM
+*Mar 23 10:44:07.192: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to up
+*Mar 23 10:44:07.192: %LINK-3-UPDOWN: Interface Loopback0, changed state to up
+DEVOPS1#
+DEVOPS1#sh ip int br
+
+
+DEVOPS1(config)#event manager applet DisableReload
+DEVOPS1(config-applet)# event cli pattern "reload" sync no skip yes occurs 1
+DEVOPS1(config-applet)# action 1.0 syslog msg "$_cli_msg has been disabled.
+
+
+TEST:
+
+DEVOPS1#reload
+*Mar 23 10:46:44.305: %SYS-5-CONFIG_I: Configured from console by admin on vty0 (192.168.102.1)
+*Mar 23 10:46:45.572: %HA_EM-6-LOG: DisableReload: reload  has been disabled.
+
+
+
+
+DEVOPS1#config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+DEVOPS1(config)#no event manager applet CreateLoopbacks
+%EEM: No such applet CreateLoopbacks
+DEVOPS1(config)#event manager applet CreateLoopbacks
+DEVOPS1(config-applet)# event none
+DEVOPS1(config-applet)# action 1.0 puts "How many Loopback interfaces do you wish to create?
+Warning: Assumed end-quote for quoted string
+WORD  
+
+DEVOPS1(config-applet)# action 1.0 puts "How many Loopback interfaces do you wish to create"
+DEVOPS1(config-applet)# action 1.1 puts nonewline "> "
+DEVOPS1(config-applet)# action 1.2 gets num 
+DEVOPS1(config-applet)# action 2.0 cli command "enable"
+DEVOPS1(config-applet)# action 2.1 cli command "conf t"
+DEVOPS1(config-applet)# action 3.0 set i "1"
+DEVOPS1(config-applet)# action 3.1 while $i le $num
+DEVOPS1(config-applet)# action 3.2  cli command "interface Loopback $i"
+DEVOPS1(config-applet)# action 3.3  cli command "ip address $i.$i.$i.$i 255.255.255.255"
+DEVOPS1(config-applet)# action 3.4  increment i 1
+DEVOPS1(config-applet)# action 3.5 end
+DEVOPS1(config-applet)# action 4.0 cli command "end"
+DEVOPS1(config-applet)# end
+
+
+DEVOPS1#event manager run CreateLoopbacks
+How many Loopback interfaces do you wish to create
+> 5
+*Mar 23 10:50:05.821: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback1, changed state to up
+*Mar 23 10:50:06.335: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback2, changed state to up
+DEVOPS1#
+*Mar 23 10:50:06.835: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback3, changed state to up
+*Mar 23 10:50:07.381: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback4, changed state to up
+*Mar 23 10:50:07.851: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback5, changed state to up
+*Mar 23 10:50:08.302: %SYS-5-CONFIG_I: Configured from console by  on vty3 (EEM:CreateLoopbacks)
+
+
+DEVOPS1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+DEVOPS1(config)#event manager applet RemoveLoopbacks
+DEVOPS1(config-applet)# event none
+DEVOPS1(config-applet)# action 1.0 puts "How many Loopback interfaces do you wish to remove?
+Warning: Assumed end-quote for quoted string
+WORD  
+
+DEVOPS1(config-applet)# action 1.0 puts "How many Loopback interfaces do you wish to remove"
+DEVOPS1(config-applet)# action 1.1 puts nonewline "> "
+DEVOPS1(config-applet)# action 1.2 gets num 
+DEVOPS1(config-applet)# action 2.0 cli command "enable"
+DEVOPS1(config-applet)# action 2.1 cli command "conf t"
+DEVOPS1(config-applet)# action 3.0 set i "1"
+DEVOPS1(config-applet)# action 3.1 while $i le $num
+DEVOPS1(config-applet)# action 3.2  cli command "no interface Loopback $i"
+DEVOPS1(config-applet)# action 3.4  increment i 1
+DEVOPS1(config-applet)# action 3.5 end
+
+
+TEST: 
+DEVOPS1#event manager run RemoveLoopbacks
+How many Loopback interfaces do you wish to remove
+>5
+
+DEVOPS1#sh ip int brief
+*Mar 23 11:03:45.308: %SYS-5-CONFIG_I: Configured from console by  on vty3 (EEM:RemoveLoopbacks)p int bri
+*Mar 23 11:03:46.529: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback1, changed state to down
+*Mar 23 11:03:46.530: %LINK-5-CHANGED: Interface Loopback1, changed state to administratively down
+*Mar 23 11:03:46.828: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback2, changed state to down
+*Mar 23 11:03:46.829: %LINK-5-CHANGED: Interface Loopback2, changed state to administratively down
+*Mar 23 11:03:46.939: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback3, changed state to down
+*Mar 23 11:03:46.940: %LINK-5-CHANGED: Interface Loopback3, changed state to administratively downef
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.108.145 YES DHCP   up                    up      
+GigabitEthernet2       192.168.102.11  YES manual up                    up      
+GigabitEthernet3       unassigned      YES unset  up                    up      
+Loopback0              1.1.1.1         YES manual up                    up      
+VirtualPortGroup0      192.168.35.1    YES manual up                    up      
+DEVOPS1#
+
+
+
+PLDTpotato#config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+PLDTpotato(config)#no event manager applet auto-delete-flash-and-reboot
+%EEM: No such applet auto-delete-flash-and-reboot
+PLDTpotato(config)#event manager applet auto-delete-flash-and-reboot
+PLDTpotato(config-applet)# event cli pattern "hostname" sync no skip yes
+PLDTpotato(config-applet)# action 1.0 cli command "delete /force /recursive flash:"
+PLDTpotato(config-applet)# action 1.1 cli command "delete /force /recursive bootflash:"
+PLDTpotato(config-applet)# action 1.2 cli command "erase startup-config"
+PLDTpotato(config-applet)# action 2.0 syslog msg "Deleting flash and rebooting the device..."
+PLDTpotato(config-applet)# action 3.0 reload
+PLDTpotato(config-applet)#
+PLDTpotato(config-applet)#
+PLDTpotato#event manager run auto-delete-flash-and-reboot
+
+
+
+
+[PhytonHere]
+
+>>> import cli
+
+commands = [
+>>> 
+>>> commands = [
+...     "show ip int brief",
+... ]
+>>> 
+>>> for c in commands:
+...     cli.executep(c)
+... 
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.108.145 YES DHCP   up                    up      
+GigabitEthernet2       192.168.102.11  YES manual up                    up      
+GigabitEthernet3       unassigned      YES unset  up                    up      
+Loopback0              1.1.1.1         YES manual up                    up      
+VirtualPortGroup0      192.168.35.1    YES manual up                    up      
+>>> import cli
+>>> 
+>>> hi_1 = '''hostname PYDEVOP_AKO
+... int loop 9
+... ip add 9.9.9.9 255.255.255.255
+... int loop 8
+... ip add 8.8.8.8 255.255.255.255
+... int loop 7
+... ip add 7.7.7.7 255.255.255.255
+... end
+... '''
+>>> 
+>>> cli.configurep(hi_1)			! PARA MAILGAY LAHAT NUNG "hi_1"
+Line 1 SUCCESS: hostname PYDEVOP_AKO
+Line 2 SUCCESS: int loop 9
+Line 3 SUCCESS: ip add 9.9.9.9 255.255.255.255
+Line 4 SUCCESS: int loop 8
+Line 5 SUCCESS: ip add 8.8.8.8 255.255.255.255
+Line 6 SUCCESS: int loop 7
+Line 7 SUCCESS: ip add 7.7.7.7 255.255.255.255
+Line 8 SUCCESS: end
+
+TEST:
+
+PYDEVOP_AKO#sh ip int brief
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.108.145 YES DHCP   up                    up      
+GigabitEthernet2       192.168.102.11  YES manual up                    up      
+GigabitEthernet3       unassigned      YES unset  up                    up      
+Loopback0              1.1.1.1         YES manual up                    up      
+Loopback7              7.7.7.7         YES TFTP   up                    up      
+Loopback8              8.8.8.8         YES TFTP   up                    up      
+Loopback9              9.9.9.9         YES TFTP   up                    up      
+VirtualPortGroup0      192.168.35.1    YES manual up                    up  
+
+
+>>> hi_1 = '''hostname DEVOPS1
+... no int loop 9
+... no int loop 8
+... no int loop 7
+... 
+... end
+... '''
+>>> 
+>>> 
+>>> 
+>>> cli.configurep(hi_1)
+Line 1 SUCCESS: hostname DEVOPS1
+Line 2 SUCCESS: no int loop 9
+Line 3 SUCCESS: no int loop 8
+Line 4 SUCCESS: no int loop 7
+Line 5 SUCCESS: 
+Line 6 SUCCESS: end
+>>> 
+>>> 
+
+TEST:
+DEVOPS1#sh ip int brief                  
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.108.145 YES DHCP   up                    up      
+GigabitEthernet2       192.168.102.11  YES manual up                    up      
+GigabitEthernet3       unassigned      YES unset  up                    up      
+Loopback0              1.1.1.1         YES manual up                    up 
+
+
+POSTMAN:
+
+GET: https://192.168.152.128/restconf/data/Cisco-IOS-XE-native:native/interface
+
+
+
+SDWAN
+
+Router#conf t
+Router(config)#hostname google
+google(config)#int l0
+google(config-if)#ip address 8.8.8.8 255.255.255.255
+google(config-if)#exit
+
+google(config)#int vlan 1
+google(config-if)#no sh
+google(config-if)#ip add
+google(config-if)#ip address 100.0.0.254 255.255.255.0
+
+google(config)#router bgp 65001
+google(config-router)#no synch
+google(config-router)#no synchronization 
+google(config-router)#bgp log-nei
+google(config-router)#bgp log-neighbor-changes 
+google(config-router)#network 8.8.8.8 mask 255.255.255.255
+google(config-router)#network 100.0.0.0 mask 255.255.255.0
+google(config-router)#neighbor 100.0.0.107 remote-as 65001
+google(config-router)#neighbor 100.0.0.109 remote-as 65001
+google(config-router)#neighbor 100.0.0.111 remote-as 65001
+
+vMANAGER
+
+
